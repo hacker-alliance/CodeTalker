@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CodeTalker</string>
+    <string name="camera">Camera</string>
+
+    <string name="title_activity_camera">CameraActivity</string>
+
+</resources>
