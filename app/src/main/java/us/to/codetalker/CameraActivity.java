@@ -4,10 +4,13 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
@@ -122,6 +125,17 @@ public class CameraActivity extends AppCompatActivity implements CvCameraViewLis
         Mat target_area = extractMaterial(Rgba, s, f);
         Imgproc.rectangle(Rgba, s, f, new Scalar(57, 255, 20));
 
+        Mat target_area_gray = new Mat(target_area.rows(), target_area.cols(), 24);
+        Imgproc.cvtColor(target_area, target_area_gray, Imgproc.COLOR_RGBA2GRAY);
+        Imgproc.GaussianBlur(target_area_gray, target_area_gray, new Size(5, 5), 0);
+        Core.MinMaxLocResult mmr = Core.minMaxLoc(target_area_gray);
+        Mat mask = new Mat(target_area.size(), CvType.CV_8UC1, Scalar.all(0));
+        Imgproc.circle(mask, mmr.maxLoc, 5, new Scalar(255, 255, 255), -1);
+        Log.i(TAG, "MEAN CODETALKER: " + Core.mean(target_area, mask));
+        Imgproc.circle(target_area, mmr.maxLoc, 5, new Scalar(0, 0, 0));
+        Rgba = overwriteMaterial(Rgba, target_area);
+        Log.i(TAG, "MEAN CODETALKER2: " + Core.mean(target_area));
+
         return Rgba;
     }
 
@@ -138,5 +152,18 @@ public class CameraActivity extends AppCompatActivity implements CvCameraViewLis
         }
 
         return output;
+    }
+
+    private Mat overwriteMaterial(Mat source, Mat input) {
+        int rows = input.cols();
+        int cols = input.rows();
+
+        for (int i=0; i<rows; i++) {
+            for (int j=0; j<cols; j++) {
+                source.put(i, j, input.get(i, j));
+            }
+        }
+
+        return source;
     }
 }
