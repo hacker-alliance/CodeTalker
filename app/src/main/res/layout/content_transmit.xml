@@ -8,4 +8,36 @@
     tools:context=".TransmitActivity"
     tools:showIn="@layout/activity_transmit">
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="8dp"
+        android:text="Input Transmit Message"
+        app:layout_constraintBottom_toTopOf="@+id/messageInput"
+        app:layout_constraintStart_toStartOf="@+id/messageInput" />
+
+    <EditText
+        android:id="@+id/messageInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="208dp"
+        android:ems="10"
+        android:hint="Your message"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="28dp"
+        android:text="Encode Message"
+        app:layout_constraintStart_toStartOf="@+id/messageInput"
+        app:layout_constraintTop_toBottomOf="@+id/messageInput" />
+
 </android.support.constraint.ConstraintLayout>

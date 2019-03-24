@@ -26,8 +26,21 @@ import static android.Manifest.permission.CAMERA;
 public class CameraActivity extends AppCompatActivity implements CvCameraViewListener2 {
 
     private static final String    TAG = "OCVSample::Activity";
+    private static final int       delayInterval = 100;
 
     private CameraBridgeViewBase   mOpenCvCameraView;
+
+    private static int             brightnessAverage = 0;
+    private static int             brightnessSum = 0;
+    private static int             brightnessCount = 0;
+    private static int             previous = 0;
+    private static int             bitcounter = 0;
+    private static float           bitHistory[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private static boolean         dataCollected = false;
+    private static boolean         preamble = false;
+    private static float           lastFrameTime = 0;
+    private static float           lastReceiveTime = 0;
+    private static float           lastCheckedTime = 0;
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -69,9 +82,10 @@ public class CameraActivity extends AppCompatActivity implements CvCameraViewLis
         ActivityCompat.requestPermissions(CameraActivity.this,
                 new String[] {CAMERA}, 1);
 
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
+        mOpenCvCameraView = findViewById(R.id.camera_view);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.enableFpsMeter();
 
         // run stuff
     }
@@ -131,10 +145,103 @@ public class CameraActivity extends AppCompatActivity implements CvCameraViewLis
         Core.MinMaxLocResult mmr = Core.minMaxLoc(target_area_gray);
         Mat mask = new Mat(target_area.size(), CvType.CV_8UC1, Scalar.all(0));
         Imgproc.circle(mask, mmr.maxLoc, 5, new Scalar(255, 255, 255), -1);
-        Log.i(TAG, "MEAN CODETALKER: " + Core.mean(target_area, mask));
+        double average[] = Core.mean(target_area, mask).val;
+        //Log.i(TAG, "MEAN CODETALKER: " + average);
         Imgproc.circle(target_area, mmr.maxLoc, 5, new Scalar(0, 0, 0));
         Rgba = overwriteMaterial(Rgba, target_area);
-        Log.i(TAG, "MEAN CODETALKER2: " + Core.mean(target_area));
+        //Log.i(TAG, "MEAN CODETALKER2: " + Core.mean(target_area));
+
+        float currentFrameTime = System.currentTimeMillis();
+        float deltaTime = currentFrameTime-lastFrameTime;
+        lastFrameTime = currentFrameTime;
+
+        if (brightnessCount < 64) {
+            brightnessSum += average[0]+average[1]+average[2];
+
+            brightnessCount++;
+        } else {
+            brightnessAverage = (brightnessSum/64)/3;
+
+            if (!dataCollected) {
+                dataCollected = true;
+                lastCheckedTime = currentFrameTime;
+            }
+
+            brightnessSum = 0;
+            brightnessCount = 0;
+        }
+
+        if (dataCollected) {
+            if (preamble) {
+                lastReceiveTime += deltaTime;
+
+                if ((average[0] + average[1] + average[2]) / 3 < brightnessAverage) {
+                    if (previous == 1) {
+                        System.out.println("READING: 0");
+                        previous = 0;
+                        lastReceiveTime = lastReceiveTime - delayInterval;
+                    } else if (lastReceiveTime > delayInterval) {
+                        System.out.println("READING: 0");
+                        lastReceiveTime = lastReceiveTime - delayInterval;
+                    }
+                } else {
+                    if (previous == 0) {
+                        System.out.println("READING: 1");
+                        previous = 1;
+                        lastReceiveTime = lastReceiveTime - delayInterval;
+                    } else if (lastReceiveTime > delayInterval) {
+                        System.out.println("READING: 1");
+                        lastReceiveTime = lastReceiveTime - delayInterval;
+                    }
+                }
+
+                //System.out.println("READING: " + lastReceiveTime);
+            } else {
+                if ((average[0] + average[1] + average[2]) / 3 < brightnessAverage) {
+                    if (previous == 1) {
+                        if (bitcounter < 16) {
+                            bitcounter++;
+                        } else if (bitHistory[15] != 0) {
+                            for (int i = 1; i<16; i++) {
+                                bitHistory[i-1] = bitHistory[i];
+                            }
+                        }
+
+                        //System.out.println("READING: 0");
+                        previous = 0;
+                        bitHistory[bitcounter-1] = currentFrameTime-lastCheckedTime;// delay interval
+                        lastCheckedTime = currentFrameTime;
+                    }
+                } else {
+                    if (previous == 0) {
+                        if (bitcounter < 16) {
+                            bitcounter++;
+                        } else if (bitHistory[15] != 0) {
+                            for (int i = 1; i<16; i++) {
+                                bitHistory[i-1] = bitHistory[i];
+                            }
+                        }
+
+                        //System.out.println("READING: 1");
+                        previous = 1;
+                        bitHistory[bitcounter-1] = currentFrameTime-lastCheckedTime;// delay interval
+                        lastCheckedTime = currentFrameTime;
+                    }
+                }
+
+                if (bitcounter == 16) {
+                    float sum = 0;
+                    for (float delay : bitHistory) {
+                        sum += delay;
+                    }
+
+                    if (sum < 1600) {
+                        lastReceiveTime = currentFrameTime-lastCheckedTime;
+                        preamble = true;
+                    }
+                }
+            }
+        }
 
         return Rgba;
     }
