@@ -26,8 +26,8 @@ public class TransmitActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-             final  CameraManager cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
-             final  String flashCameraId;
+               CameraManager cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
+               String flashCameraId = "0";
 
                 try {
                     for (String cameraId : cameraManager.getCameraIdList()) {
@@ -45,6 +45,8 @@ public class TransmitActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                Transmit(PulseProtocol.convertTextToPulses("HELLO WORLD"),cameraManager,flashCameraId);
+
             }
 
 
@@ -60,8 +62,9 @@ public class TransmitActivity extends AppCompatActivity {
     }
 
     public void Transmit(final ArrayList<Boolean> message, final CameraManager cameraManager, final String displayCameraId ){
-
         for(int i = 0; i < message.size() ; i++) {
+            Log.i("HARDCODE"," " + message.get(i));
+
             if (message.get(i)) {
                 new Handler().postDelayed(new Runnable() {
 
@@ -75,7 +78,7 @@ public class TransmitActivity extends AppCompatActivity {
                         }
 
                     }
-                }, 100); // Millisecond 100
+                }, 100*i); // Millisecond 100
             }
             else{
                 new Handler().postDelayed(new Runnable() {
@@ -90,9 +93,10 @@ public class TransmitActivity extends AppCompatActivity {
                         }
 
                     }
-                }, 100); // Millisecond 100
+                }, 100*i); // Millisecond 100
             }
         }
+        Log.i("HARDCODE"," " + message.size());
     }
 
 }
