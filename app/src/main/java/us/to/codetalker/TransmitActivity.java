@@ -19,7 +19,6 @@ public class TransmitActivity extends AppCompatActivity {
 
     EditText messageInput;
 
-
     Button submitButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,29 +27,15 @@ public class TransmitActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-        messageInput = (EditText) findViewById(R.id.messageInput);
-
-
-        submitButton = (Button) findViewById(R.id.submitButton);
+        messageInput = findViewById(R.id.messageInput);
+        submitButton = findViewById(R.id.submitButton);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 message = messageInput.getText().toString();
 
-
-            }
-        });
-
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-               CameraManager cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
-               String flashCameraId = "0";
+                CameraManager cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
+                String flashCameraId = "0";
 
                 try {
                     for (String cameraId : cameraManager.getCameraIdList()) {
@@ -71,9 +56,8 @@ public class TransmitActivity extends AppCompatActivity {
                 Transmit(PulseProtocol.convertTextToPulses(message),cameraManager,flashCameraId);
 
             }
-
-
         });
+
     }
 
     public void toggleFlash(CameraManager cameraManager, String flashCameraId, boolean status){
