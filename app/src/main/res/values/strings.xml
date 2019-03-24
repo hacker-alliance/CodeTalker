@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">CodeTalker</string>
     <string name="camera">Camera</string>
+    <string name="transmit">Transmit</string>
 
     <string name="title_activity_camera">CameraActivity</string>
+    <string name="title_activity_transmit">TransmitActivity</string>
 
 </resources>

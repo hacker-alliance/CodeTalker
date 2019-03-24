@@ -7,6 +7,9 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
+import org.opencv.core.Scalar;
+import org.opencv.core.Point;
+import org.opencv.imgproc.Imgproc;
 
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -106,8 +109,34 @@ public class CameraActivity extends AppCompatActivity implements CvCameraViewLis
     }
 
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-        // code run every frame
+        Mat Rgba = inputFrame.rgba();
 
-        return inputFrame.rgba();
+        int center_x = 2*Rgba.cols()/7;
+        int center_y = Rgba.rows()/2;
+
+        int box_size = 100;
+
+        Point s = new Point(center_x-box_size/2,center_y-box_size/2);
+        Point f = new Point(center_x+box_size/2,center_y+box_size/2);
+
+        Mat target_area = extractMaterial(Rgba, s, f);
+        Imgproc.rectangle(Rgba, s, f, new Scalar(57, 255, 20));
+
+        return Rgba;
+    }
+
+    private Mat extractMaterial(Mat input, Point s, Point f) {
+        int rows = (int) Math.abs(s.x-f.x);
+        int cols = (int) Math.abs(s.y-f.y);
+
+        Mat output = new Mat(rows, cols, 24);
+
+        for (int i=0; i<rows; i++) {
+            for (int j=0; j<cols; j++) {
+                output.put(i, j, input.get(i+((int) s.y), j+((int) s.x)));
+            }
+        }
+
+        return output;
     }
 }
