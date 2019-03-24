@@ -9,9 +9,17 @@ import android.hardware.camera2.*;
 import android.util.Log;
 import android.os.Handler;
 import java.util.ArrayList;
+import android.widget.Button;
+import android.widget.EditText;
+
 
 public class TransmitActivity extends AppCompatActivity {
 
+    String message;
+
+    EditText messageInput;
+
+    Button submitButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,15 +27,15 @@ public class TransmitActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        messageInput = findViewById(R.id.messageInput);
+        submitButton = findViewById(R.id.submitButton);
+        submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                message = messageInput.getText().toString();
 
-               CameraManager cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
-               String flashCameraId = "0";
+                CameraManager cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
+                String flashCameraId = "0";
 
                 try {
                     for (String cameraId : cameraManager.getCameraIdList()) {
@@ -45,12 +53,11 @@ public class TransmitActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                Transmit(PulseProtocol.convertTextToPulses("HELLO WORLD"),cameraManager,flashCameraId);
+                Transmit(PulseProtocol.convertTextToPulses(message),cameraManager,flashCameraId);
 
             }
-
-
         });
+
     }
 
     public void toggleFlash(CameraManager cameraManager, String flashCameraId, boolean status){
