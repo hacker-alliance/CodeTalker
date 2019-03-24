@@ -119,8 +119,24 @@ public class CameraActivity extends AppCompatActivity implements CvCameraViewLis
         Point s = new Point(center_x-box_size/2,center_y-box_size/2);
         Point f = new Point(center_x+box_size/2,center_y+box_size/2);
 
+        Mat target_area = extractMaterial(Rgba, s, f);
         Imgproc.rectangle(Rgba, s, f, new Scalar(57, 255, 20));
 
         return Rgba;
+    }
+
+    private Mat extractMaterial(Mat input, Point s, Point f) {
+        int rows = (int) Math.abs(s.x-f.x);
+        int cols = (int) Math.abs(s.y-f.y);
+
+        Mat output = new Mat(rows, cols, 24);
+
+        for (int i=0; i<rows; i++) {
+            for (int j=0; j<cols; j++) {
+                output.put(i, j, input.get(i+((int) s.y), j+((int) s.x)));
+            }
+        }
+
+        return output;
     }
 }
