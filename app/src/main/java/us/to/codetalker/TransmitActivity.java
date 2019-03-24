@@ -9,9 +9,18 @@ import android.hardware.camera2.*;
 import android.util.Log;
 import android.os.Handler;
 import java.util.ArrayList;
+import android.widget.Button;
+import android.widget.EditText;
+
 
 public class TransmitActivity extends AppCompatActivity {
 
+    String message;
+
+    EditText messageInput;
+
+
+    Button submitButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,6 +28,20 @@ public class TransmitActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+
+        messageInput = (EditText) findViewById(R.id.messageInput);
+
+
+        submitButton = (Button) findViewById(R.id.submitButton);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                message = messageInput.getText().toString();
+
+
+            }
+        });
 
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -45,7 +68,7 @@ public class TransmitActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                Transmit(PulseProtocol.convertTextToPulses("HELLO WORLD"),cameraManager,flashCameraId);
+                Transmit(PulseProtocol.convertTextToPulses(message),cameraManager,flashCameraId);
 
             }
 
