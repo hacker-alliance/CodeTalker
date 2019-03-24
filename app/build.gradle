@@ -32,5 +32,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.android.volley:volley:1.1.0'
     implementation 'com.google.guava:guava:27.0.1-android'
+    //JUnit 4 framework
+    testImplementation 'junit:junit:4.12'
 
 }
