@@ -53,6 +53,7 @@ public class TransmitActivity extends AppCompatActivity {
                 }
 
                 Transmit(PulseProtocol.convertTextToPulses(message),cameraManager,flashCameraId);
+             //   Transmit(PulseProtocol.convertTextToPulses(""),cameraManager,flashCameraId);
 
             }
         });
@@ -65,7 +66,6 @@ public class TransmitActivity extends AppCompatActivity {
 
             if (message.get(i)) {
                 new Handler().postDelayed(new Runnable() {
-
                     @Override
                     public void run() {
 
@@ -80,7 +80,6 @@ public class TransmitActivity extends AppCompatActivity {
             }
             else{
                 new Handler().postDelayed(new Runnable() {
-
                     @Override
                     public void run() {
 
@@ -94,6 +93,20 @@ public class TransmitActivity extends AppCompatActivity {
                 }, 100*i); // Millisecond 100
             }
         }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    cameraManager.setTorchMode(displayCameraId, false);
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, 100*message.size()); // Millisecond 100
+
         Log.i("HARDCODE"," " + message.size());
     }
 }
