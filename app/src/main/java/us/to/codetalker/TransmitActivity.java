@@ -1,7 +1,6 @@
 package us.to.codetalker;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -60,14 +59,6 @@ public class TransmitActivity extends AppCompatActivity {
 
     }
 
-    public void toggleFlash(CameraManager cameraManager, String flashCameraId, boolean status){
-        try {
-            cameraManager.setTorchMode(flashCameraId, status);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void Transmit(final ArrayList<Boolean> message, final CameraManager cameraManager, final String displayCameraId ){
         for(int i = 0; i < message.size() ; i++) {
             Log.i("HARDCODE"," " + message.get(i));
@@ -105,6 +96,5 @@ public class TransmitActivity extends AppCompatActivity {
         }
         Log.i("HARDCODE"," " + message.size());
     }
-
 }
 
