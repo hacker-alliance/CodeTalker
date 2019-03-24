@@ -26,4 +26,9 @@ public class MainActivity extends AppCompatActivity {
         Intent loginIntent = new Intent(this, CameraActivity.class);
         startActivity(loginIntent);
     }
+
+    public void gotoTransmit(View v){
+        Intent loginIntent = new Intent(this, TransmitActivity.class);
+        startActivity(loginIntent);
+    }
 }
