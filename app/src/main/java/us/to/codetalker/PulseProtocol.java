@@ -29,7 +29,7 @@ final class PulseProtocol {
         //Add sync signal
         //Add several signed 2's complement of 10101010
         for (int i = 0; i < NUMSYNCBYTES; ++i) {
-            //outputbytes.add(SYNCBYTE);
+            outputbytes.add(SYNCBYTE);
         }
         //Add 2 transmit signal bytes //signed 2's complement of 11001100
         for (int i = 0; i < NUMTRANSMITBYTES; ++i) {
